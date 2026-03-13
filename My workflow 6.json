@@ -1,0 +1,115 @@
+{
+  "name": "My workflow 6",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "halo sedulur👋\nminmin disini, ada yang bisa di bantu?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9c32c8b0-d01e-45fe-94cc-ef2ccb53cc63",
+      "name": "When chat message received",
+      "webhookId": "a600f056-1ce1-4521-9592-bdddc6376526"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "## Garis Besar\nAnda adalah chatbot AI spesialis Fakta Menarik Nusantara.\nTugas Anda adalah membantu menjawab pertanyaan yang berkaitan dengan Fakta Nusantara\nsesuai dengan Dasar Pengetahuan Fakta di bawah ini.\n\n# Dasar Pengetahuan Fakta\nNama Fakta; Deskripsi\nKomodo; Hewan kadal terbesar di dunia, hanya ada di Indonesia\nDanau Toba; Danau vulkanik terbesar di Asia Tenggara\nBatik; Kain tradisional Indonesia, setiap daerah punya motif unik\nCandi Borobudur; Candi Buddha terbesar di dunia, terletak di Magelang\nRinjani; Gunung berapi tertinggi kedua di Indonesia, terletak di Lombok\n\n# Aturan\n- Jawaban harus sederhana, jelas, dan menarik.\n- Jika pertanyaan tidak ada di tabel, jangan mengarang jawaban.\n- Jika tidak tahu, jawab jujur: \"Maaf, saya tidak memiliki informasi tersebut.\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "19bd92ec-7334-4525-b3c5-aaf8c1978fd9",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        208,
+        192
+      ],
+      "id": "d74e91e7-8335-4bc9-9654-68154a496d37",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "1DwvYNlQDY7BRclT",
+          "name": "Google Gemini(PaLM) Api account 3 yaaa"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        192
+      ],
+      "id": "df7e6949-412b-4439-a72b-266998080b8b",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "f586fd9f-6a35-4b9b-b68d-f86dad0df2bd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1db11a625f3afe1fab5c0985ea49aa71b566a373fd238a812e27aacddcade49d"
+  },
+  "id": "vfd1Q3QrVG3epDP5",
+  "tags": []
+}

@@ -1,0 +1,403 @@
+{
+  "name": "tugas 2 modul 7 Workflow FIX Email to Sheets",
+  "nodes": [
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.from }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "4c939e3c-93a3-4f9f-9b7e-b488321cb607"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "CGV"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b2505580-fddc-4736-9014-0c6d012a32e2",
+                    "leftValue": "={{ $json.from }}",
+                    "rightValue": "dama23079si@student.nurulfikri.ac.id",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "grab"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "2c8ac501-e249-4204-9a22-358c437520c7",
+                    "leftValue": "={{ $json.from }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "tokopedia"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        0
+      ],
+      "id": "6078d0c7-ab52-4917-b4d7-c2f440993a0d",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d1464ba4-97fb-44a9-8b0e-893c8ae07ad1",
+              "name": "tanggal",
+              "value": "={{ $json.date }}",
+              "type": "string"
+            },
+            {
+              "id": "2ea382c8-4542-46b8-8ae1-4c43683ed938",
+              "name": "jumlah",
+              "value": "={{ $json.textPlain?.match(/total.*?Rp\\s*([\\d\\.]+)/is)?.[1]?.replace(/\\./g,'') }}",
+              "type": "string"
+            },
+            {
+              "id": "ae36613a-ae15-4357-a825-64b5e9cc8728",
+              "name": "nominal",
+              "value": "CGV",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        -224
+      ],
+      "id": "9b65400e-6d7c-4374-a760-7acc2da46db9",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8483e6f3-a3e6-41a1-a5c1-ccaf23e6dce2",
+              "name": "tanggal",
+              "value": "={{ $json.date }}",
+              "type": "string"
+            },
+            {
+              "id": "87b13728-34be-442f-9b5b-2478fcf5d8d4",
+              "name": "jumlah",
+              "value": "={{ $json.textPlain?.match(/Rp\\s*([\\d\\.]+)/i)?.[1]?.replace(/\\./g,'') }}",
+              "type": "string"
+            },
+            {
+              "id": "9179d099-cd43-46b1-9674-a4f3814e9983",
+              "name": "nominal",
+              "value": "GRAB",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        16
+      ],
+      "id": "85213c0d-b8fa-4174-bcc3-808e93e4a413",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6207c2d8-0f75-4b12-ae8c-92f005ff694b",
+              "name": "tanggal",
+              "value": "={{ $json.date }}",
+              "type": "string"
+            },
+            {
+              "id": "4ff1367b-d39b-4491-a6e6-2007bb670fad",
+              "name": "jumlah",
+              "value": "={{ $json.textPlain?.match(/Rp\\s*([\\d\\.]+)/i)?.[1]?.replace(/\\./g,'') }}",
+              "type": "string"
+            },
+            {
+              "id": "7b261a0a-c8d3-4b43-9b4d-4afc7d2f8565",
+              "name": "nominal",
+              "value": "=tokopedia",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        432,
+        208
+      ],
+      "id": "45a28c9d-515b-4f4e-84d1-1ed605f231d2",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        720,
+        0
+      ],
+      "id": "ef0891c7-04f4-40b3-93ef-b336ddae33b4",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1a0NW3h8YStKSFuzGsHbg6CAweH5NZtHxl2lSH9Y5m2Q",
+          "mode": "list",
+          "cachedResultName": "bukti transaksi keuangan dari email",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1a0NW3h8YStKSFuzGsHbg6CAweH5NZtHxl2lSH9Y5m2Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1a0NW3h8YStKSFuzGsHbg6CAweH5NZtHxl2lSH9Y5m2Q/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tanggal": "={{ $json.tanggal }}",
+            "jumlah": "={{ $json.jumlah }}",
+            "produk": "={{ $json.nominal }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "tanggal",
+              "displayName": "tanggal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "jumlah",
+              "displayName": "jumlah",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "produk",
+              "displayName": "produk",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        960,
+        16
+      ],
+      "id": "65453e9b-8cab-407b-8bf2-9aa875dd9ee8",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XTSgLsOulOq9eTF7",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2.1,
+      "position": [
+        -32,
+        16
+      ],
+      "id": "3325fd04-1bb8-4946-a5d4-995983d59dec",
+      "name": "Email Trigger",
+      "credentials": {
+        "imap": {
+          "id": "9pmWanQtVLK2TOEs",
+          "name": "IMAP account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "557668dc-6296-4b3f-8872-dd78ec0e8763",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1db11a625f3afe1fab5c0985ea49aa71b566a373fd238a812e27aacddcade49d"
+  },
+  "id": "jAM3bTJ426GngSDV",
+  "tags": []
+}

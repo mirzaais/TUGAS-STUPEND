@@ -1,0 +1,286 @@
+{
+  "name": "TUGAS 4 MODUL 8 SOP AI Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "be16fd30-f6d5-406f-9aa5-696061369abe",
+      "name": "Telegram Trigger",
+      "webhookId": "f52e8c0e-22a2-4fc6-b5e1-4e77e711b98b",
+      "credentials": {
+        "telegramApi": {
+          "id": "RapAv7paPrOKKozX",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Anda adalah SOP AI Agent.\n\nATURAN KERAS:\n- Anda WAJIB menggunakan TOOL \"Data Pertanyaan\" sebelum\nmenjawab.\n- Jawaban HARUS diambil dari hasil tool.\n- DILARANG menggunakan pengetahuan umum.\n- Jika data tidak ditemukan, jawab: \"Maaf, informasi tersebut\ntidak tersedia di SOP.\"\n\nPertanyaan pengguna:\n{{ $node[\"Telegram Trigger\"].json.message.text }}\n\nJawaban berdasarkan SOP:",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        624,
+        -128
+      ],
+      "id": "fe26296d-66ef-4320-aef9-d630129b7e46",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        624,
+        80
+      ],
+      "id": "4bfccdce-91a3-4e4f-8216-d162e5144cc4",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "zFLYdnZisC6ugSIN",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15QTQqOSpthVXciDy2z2yo9zq8rkonH1St6bjXCnNEdE",
+          "mode": "list",
+          "cachedResultName": "Data Pertanyaan untuk Karyawan",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15QTQqOSpthVXciDy2z2yo9zq8rkonH1St6bjXCnNEdE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 942450407,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15QTQqOSpthVXciDy2z2yo9zq8rkonH1St6bjXCnNEdE/edit#gid=942450407"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        784,
+        80
+      ],
+      "id": "84091e2c-bccc-4de4-8c7e-e17a1b311746",
+      "name": "Data Pertanyaan",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XTSgLsOulOq9eTF7",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d35fbbfe-311c-48c1-8fc0-392a1d94013a",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "Bagaimana prosedur reimbursment?",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "256e41dc-7846-4044-8a1e-01eca7271416",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "Prosedur pengajuan cuti tahunan",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "e19223d5-b119-4985-b107-c4d2853975fe",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "Bagaimana peraturaan lembur diperusahaan?",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "4330816f-1d3a-4ad9-a374-41224e49c943",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "Apa syarat klaim asuransi  kesehatan?",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "ceeed292-ace5-4be9-a635-e40e9e126530",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "Bagaimana prosedur permintaan alat kerja baru?",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "e73b9d01-68f2-4f02-a5f1-552346a522f7",
+      "name": "Memastikan sesuai format"
+    },
+    {
+      "parameters": {
+        "chatId": "5469947998",
+        "text": "=Pertanyaan anda tidak sesuai, silakan gunakan pertanyaan seperti berikut:\nBagaimana prosedur reimbursement?\nProsedur pengajuan cuti tahunan\nBagaimana aturan lembur di perusahaan?\nApa syarat klaim asuransi kesehatan?\nBagaimana prosedur permintaan alat kerja baru?",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        416,
+        96
+      ],
+      "id": "c04d493b-0cf7-45fe-be03-7a1eb584e10c",
+      "name": "False output",
+      "webhookId": "beaa4337-eccf-4d17-af04-007c258bbfd4",
+      "credentials": {
+        "telegramApi": {
+          "id": "RapAv7paPrOKKozX",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        976,
+        -128
+      ],
+      "id": "72d03e80-fa44-4e9e-b323-60fefbde2e83",
+      "name": "True output",
+      "webhookId": "834ea80d-f712-4ada-88bd-df0452880fb1",
+      "credentials": {
+        "telegramApi": {
+          "id": "RapAv7paPrOKKozX",
+          "name": "Telegram account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Memastikan sesuai format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data Pertanyaan": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "True output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memastikan sesuai format": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "False output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "aaab1182-2260-4126-a7e1-30a65e38b4e0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1db11a625f3afe1fab5c0985ea49aa71b566a373fd238a812e27aacddcade49d"
+  },
+  "id": "JIrucjmVQPEdgHrN",
+  "tags": []
+}

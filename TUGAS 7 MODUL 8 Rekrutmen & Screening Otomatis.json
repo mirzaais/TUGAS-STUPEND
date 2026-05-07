@@ -1,0 +1,237 @@
+{
+  "name": "TUGAS 7 MODUL 8 Rekrutmen & Screening Otomatis",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Form rekrutmen posisi mentor",
+        "formDescription": "Harap isi form ini sesuai dengan ketentuan yang berlaku",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Nama lengkap",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Pengalaman",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "< 1 Tahun"
+                  },
+                  {
+                    "option": "1 - 3 Tahun"
+                  },
+                  {
+                    "option": "> 3 tahun"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Upload CV (PDF)",
+              "fieldType": "file",
+              "acceptFileTypes": ".pdf",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "path": "form-recruitmen-mentor"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6a38d0e7-40f1-4c6e-9c9d-7316a94a82b0",
+      "name": "On form submission",
+      "webhookId": "0242daa6-16dc-4e29-9977-136f72ca283e"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "Upload_CV__PDF_",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "00e6381e-9064-4da4-b29a-fce91ca7a39d",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Peran: Anda adalah Senior Technical Recruiter yang sangat teliti dan objektif. Tugas Anda adalah mengevaluasi teks CV kandidat di bawah ini untuk posisi Automation Engineer/Developer.\n\nKonteks CV Kandidat:\n\"\"\"\n{{ $json.text }}\n\"\"\"\n\nInstruksi Penilaian:\n1. Analisis pengalaman kerja, keahlian teknis (Hard Skills), dan latar belakang pendidikan.\n2. Identifikasi apakah kandidat memiliki pengalaman dengan tool seperti: n8n, Javascript, Python, SQL, atau API Integration.\n3. Berikan skor profesional dari 0-100.\n   - Skor < 50: Tidak relevan/Pemula.\n   - Skor 50-75: Menengah/Potensial.\n   - Skor > 75: Sangat Cocok/Senior.\n\nFormat Output (WAJIB JSON):\nJangan berikan basa-basi atau teks pembuka. HANYA berikan output JSON valid dengan struktur berikut:\n{\n  \"candidate_name\": \"Nama lengkap kandidat (jika ada)\",\n  \"years_of_experience\": \"Estimasi total tahun pengalaman (angka)\",\n  \"top_skills\": [\"Skill 1\", \"Skill 2\", \"Skill 3\", \"Skill 4\", \"Skill 5\"],\n  \"summary\": \"Ringkasan profil kandidat dalam 1 paragraf pendek (maksimal 30 kata) dalam Bahasa Indonesia.\",\n  \"strengths\": \"Poin kuat kandidat\",\n  \"weaknesses\": \"Kekurangan/hal yang perlu diklarifikasi\",\n  \"score\": 0,\n  \"hiring_recommendation\": \"YES / NO / MAYBE\"\n}\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        624,
+        0
+      ],
+      "id": "b3b8874b-d96f-4971-b39b-01f867a4000e",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        560,
+        208
+      ],
+      "id": "4baed33d-67d2-4cdd-b90f-a6ac745bbe6a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0PzPb6oPtdRKgdNI",
+          "name": "Google Gemini(PaLM) Api account 4 modul 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=5469947998",
+        "text": "=Nama: {{ $json.ai_name }}\nSkills: {{ $json.ai_skills }}\nScore: {{ $json.ai_score }}\nSummary: {{ $json.ai_summary }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1152,
+        0
+      ],
+      "id": "d405de83-9561-40b4-aebc-917cbaa07d6d",
+      "name": "Send a text message",
+      "webhookId": "e3044aa8-ebf3-4803-875b-f8681b97ed68",
+      "credentials": {
+        "telegramApi": {
+          "id": "RapAv7paPrOKKozX",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all(); // Ambil data input \n\nfor (let item of items) {\n  const binaryData = item.binary?.Upload_CV__PDF_;\n\n  if (binaryData) {\n    item.json.cv_base64 = binaryData.data; // Data base64 internal \n    item.json.fileName = binaryData.fileName;\n  }\n\n  // Tambahkan tanggal format Indonesia menggunakan Luxon \n  item.json.tanggal_input = DateTime.now().toFormat('dd-MM-yyyy HH:mm');\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "a6c1d960-b885-4185-9a6c-50ddb757638d",
+      "name": "Mengonversi ke base54"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nfor (let item of items) {\n  const aiResponseText = item.json.text; // Output teks dari LLM\n  \n  try {\n    // 1. Bersihkan formatting jika AI memberikan markdown ```json ... ```\n    const cleanJson = aiResponseText.replace(/```json|```/g, '').trim();\n    \n    // 2. Parse string menjadi Objek\n    const parsedData = JSON.parse(cleanJson);\n    \n    // 3. Masukkan ke item.json agar bisa dipanggil node selanjutnya\n    item.json.ai_name = parsedData.candidate_name;\n    item.json.ai_exp = parsedData.years_of_experience;\n    item.json.ai_skills = parsedData.top_skills.join(\", \"); // Array jadi string\n    item.json.ai_summary = parsedData.summary;\n    item.json.ai_score = parsedData.score;\n    item.json.ai_rec = parsedData.hiring_recommendation;\n    \n  } catch (error) {\n    // Fallback jika AI gagal generate JSON valid\n    item.json.error = \"Gagal parsing JSON dari AI\";\n    item.json.raw_output = aiResponseText;\n  }\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        944,
+        0
+      ],
+      "id": "00e74824-c2a0-4410-9c82-ae5609ca73bd",
+      "name": "Mengubah ke JSON Object"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Mengonversi ke base54",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Mengubah ke JSON Object",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mengonversi ke base54": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mengubah ke JSON Object": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "1a49869b-6c50-40f0-a540-2fdcd1c2b874",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1db11a625f3afe1fab5c0985ea49aa71b566a373fd238a812e27aacddcade49d"
+  },
+  "id": "284RfnRRyfVIAzt8",
+  "tags": []
+}
